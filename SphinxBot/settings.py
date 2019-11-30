@@ -13,6 +13,8 @@ https://docs.djangoproject.com/en/2.2/ref/settings/
 import os
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
+from celery.schedules import crontab
+
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 # Quick-start development settings - unsuitable for production
@@ -128,9 +130,15 @@ STATIC_URL = '/static/'
 GITHUB_APP_KEY = os.getenv("GITHUB_APP_KEY")
 GITHUB_APP_SECRET = os.getenv("GITHUB_APP_SECRET").encode()
 
-# Remind Pattern
-
-REMIND_PATTERN = "@sphinxremind[\s*in*\d+]+[adehikmnortuwy]{1,6}s{0,1}"
-
 # CELERY
 CELERY_BROKER_URL = "pyamqp://guest@localhost//"
+CELERY_RESULT_BACKEND = "rpc://guest@locahost"
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_RESULT_SERIALIZER = 'json'
+CELERY_TIME_ZONE = TIME_ZONE
+CELERY_BEAT_SCHEDULE = {
+    'remind': {
+        'task': 'bot.remind.tasks.launch',
+        'schedule': 20*60,
+    }
+}

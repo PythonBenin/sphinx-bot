@@ -1,19 +1,17 @@
 import re
 
-from django.conf import settings
-
 from dateutil.parser import parse as date_parser
 from django.utils.timezone import get_default_timezone
 
 
-
 def extractor(text):
-    pattern = re.compile(settings.REMIND_PATTERN, re.IGNORECASE)
+    pattern = re.compile(r'@all-contributors[((?please)remind{1,1}?(mein))\d+\s*]+[adehikmnortuwy]{1,6}?s',
+                         re.IGNORECASE)
     matched = pattern.findall(text)
 
     if matched:
         matched = matched[0]
-        pattern = re.compile('\d+', re.IGNORECASE)
+        pattern = re.compile(r'\d+', re.IGNORECASE)
         duration = pattern.findall(matched)[0]
         unit = _format_unit(matched.split(duration)[1].strip())
 
@@ -30,6 +28,7 @@ def _format_unit(unit):
     if not unit.endswith('s'):
         unit += 's'
     return unit
+
 
 def parse_date(date_str):
     if not date_str:

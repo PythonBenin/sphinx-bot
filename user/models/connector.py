@@ -1,8 +1,9 @@
 from django.db import models, IntegrityError
-from django.utils.timezone import datetime
+from django.utils.timezone import now
 
 from user.api import api_connector_record
 from xlib.api import GithubAPI
+from xlib.utils import parse_date
 
 
 class ConnectorManager(models.Manager):
@@ -29,7 +30,7 @@ class Connector(models.Model):
 
     @property
     def api(self):
-        if self.expires_at is None or self.expires_at.isoformat() < datetime.now().isoformat():
+        if self.expires_at is None or self.expires_at < now():
             self.__get_token_access()
         self.__api = GithubAPI(token=self.access_token)
         return self.__api
@@ -47,7 +48,7 @@ class Connector(models.Model):
         assert response.status_code == 201
         response = response.json()
         self.access_token = response['token']
-        self.expires_at = response['expires_at']
+        self.expires_at = parse_date(response['expires_at'])
 
         self.save(update_fields=['access_token', 'expires_at'])
 
