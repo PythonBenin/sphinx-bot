@@ -54,6 +54,8 @@ class Connector(models.Model):
 
     def uninstall(self):
         self.is_active = False
+        self.access_token = None
+        self.expires_at = None
         self.save(update_fields=['is_active'])
 
     def __str__(self):

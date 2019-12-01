@@ -89,7 +89,7 @@ DATABASES = {
         'NAME': 'postgres',
         'USER': 'postgres',
         'PASSWORD': 'postgres',
-        'HOST': 'localhost',
+        'HOST': 'postgres',
         'PORT': '5432',
     }
 }
@@ -136,8 +136,8 @@ GITHUB_APP_SECRET = open(
     os.path.join(BASE_DIR, "static/sphinx-reminder.pem")).read().encode()  # os.getenv("GITHUB_APP_SECRET").encode()
 
 # CELERY
-CELERY_BROKER_URL = "pyamqp://guest@localhost//"
-CELERY_RESULT_BACKEND = "rpc://guest@localhost"
+CELERY_BROKER_URL = "pyamqp://guest@rabbitmq//"
+CELERY_RESULT_BACKEND = "rpc://guest@rabbitmq"
 CELERY_TASK_SERIALIZER = 'json'
 CELERY_RESULT_SERIALIZER = 'json'
 CELERY_TIME_ZONE = TIME_ZONE

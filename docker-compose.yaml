@@ -37,6 +37,8 @@ services:
       - rabbitmq
     ports:
       - "8000:8000"
+    environment:
+      - GITHUB_APP_KEY=47281
     hostname: sphinxbot
     image: app-image
     networks:
