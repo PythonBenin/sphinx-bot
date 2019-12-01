@@ -5,4 +5,4 @@ WORKDIR /app
 COPY requirements.txt /app/
 RUN pip install -r requirements.txt
 COPY . /app/
-RUN mv wait-for /bin/wait-for
+#RUN mv wait-for /bin/wait-for

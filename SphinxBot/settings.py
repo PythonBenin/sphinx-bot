@@ -89,7 +89,7 @@ DATABASES = {
         'NAME': 'postgres',
         'USER': 'postgres',
         'PASSWORD': 'postgres',
-        'HOST': 'postgres',
+        'HOST': 'localhost',
         'PORT': '5432',
     }
 }
@@ -132,17 +132,18 @@ STATIC_URL = '/static/'
 
 # GITHUB
 GITHUB_APP_KEY = os.getenv("GITHUB_APP_KEY")
-GITHUB_APP_SECRET = os.getenv("GITHUB_APP_SECRET").encode()
+GITHUB_APP_SECRET = open(
+    os.path.join(BASE_DIR, "static/sphinx-reminder.pem")).read().encode()  # os.getenv("GITHUB_APP_SECRET").encode()
 
 # CELERY
-CELERY_BROKER_URL = "pyamqp://guest@rabbitmq//"
-CELERY_RESULT_BACKEND = "rpc://guest@rabbitmq"
+CELERY_BROKER_URL = "pyamqp://guest@localhost//"
+CELERY_RESULT_BACKEND = "rpc://guest@localhost"
 CELERY_TASK_SERIALIZER = 'json'
 CELERY_RESULT_SERIALIZER = 'json'
 CELERY_TIME_ZONE = TIME_ZONE
 CELERY_BEAT_SCHEDULE = {
     'remind': {
         'task': 'bot.remind.tasks.launch',
-        'schedule': 1*60,
+        'schedule': 1 * 60,
     }
 }

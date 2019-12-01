@@ -49,4 +49,5 @@ class GithubUser(models.Model):
 
     class Meta:
         db_table = "github_user"
+        unique_together = (('github_id'),)
         managed = True
