@@ -7,3 +7,4 @@ node_modules
 package-lock.json
 celerybeat*.db
 celerybeat.pid
+wait-for

@@ -1,0 +1,102 @@
+version: '3'
+
+services:
+  rabbitmq:
+    container_name: rabbitmq
+    hostname: rabbitmq
+    image: rabbitmq:latest
+    networks:
+      - main
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    restart: on-failure
+
+  postgres:
+    container_name: postgres
+    hostname: postgres
+    image: postgres:latest
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DATABASE=postgres
+    networks:
+      - main
+    ports:
+      - "5432:5432"
+    restart: on-failure
+    volumes:
+      - postgresql-data:/var/lib/postgresql/data
+
+  app:
+    build: .
+    command: sh -c "python manage.py migrate && python manage.py runserver 0.0.0.0:8000"
+    container_name: SphinxBot
+    depends_on:
+      - postgres
+      - rabbitmq
+    ports:
+      - "8000:8000"
+    hostname: sphinxbot
+    image: app-image
+    networks:
+      - main
+    restart: on-failure
+
+  celery_worker:
+    command: sh -c "celery -A SphinxBot worker -l info -E"
+    container_name: celery_worker
+    depends_on:
+      - app
+      - postgres
+      - rabbitmq
+    deploy:
+      replicas: 2
+      restart_policy:
+        condition: on-failure
+      resources:
+        limits:
+          cpus: '0.50'
+          memory: 50M
+        reservations:
+          cpus: '0.25'
+          memory: '20M'
+    hostname: celery_worker
+    image: app-image
+    networks:
+      - main
+    restart: on-failure
+
+  celery_beat:
+    command: sh -c "celery -A SphinxBot beat -l info"
+    container_name: celery_beat
+    depends_on:
+      - app
+      - postgres
+      - rabbitmq
+    hostname: celery_beat
+    image: app-image
+    networks:
+      - main
+    restart: on-failure
+
+  celery_flower:
+    command: sh -c "celery flower -A SphinxBot --address=0.0.0.0 --port=5555"
+    container_name: celery_flower
+    depends_on:
+      - app
+      - postgres
+      - rabbitmq
+    hostname: celery_flower
+    image: app-image
+    ports:
+      - "5555:5555"
+    networks:
+      - main
+    restart: on-failure
+
+networks:
+  main:
+
+volumes:
+  postgresql-data:

@@ -85,8 +85,12 @@ WSGI_APPLICATION = 'SphinxBot.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': 'postgres',
+        'USER': 'postgres',
+        'PASSWORD': 'postgres',
+        'HOST': 'postgres',
+        'PORT': '5432',
     }
 }
 
@@ -131,14 +135,14 @@ GITHUB_APP_KEY = os.getenv("GITHUB_APP_KEY")
 GITHUB_APP_SECRET = os.getenv("GITHUB_APP_SECRET").encode()
 
 # CELERY
-CELERY_BROKER_URL = "pyamqp://guest@localhost//"
-CELERY_RESULT_BACKEND = "rpc://guest@locahost"
+CELERY_BROKER_URL = "pyamqp://guest@rabbitmq//"
+CELERY_RESULT_BACKEND = "rpc://guest@rabbitmq"
 CELERY_TASK_SERIALIZER = 'json'
 CELERY_RESULT_SERIALIZER = 'json'
 CELERY_TIME_ZONE = TIME_ZONE
 CELERY_BEAT_SCHEDULE = {
     'remind': {
         'task': 'bot.remind.tasks.launch',
-        'schedule': 20*60,
+        'schedule': 1*60,
     }
 }
